@@ -21,3 +21,5 @@ docker run --rm -e MYSQL_HOST=host.docker.internal -e MYSQL_USER=root -e MYSQL_P
 ## Pterodactyl
 
 Import the egg from `egg-tfs-game-server.json` into your nest. The egg expects the server root to contain TFS datapack (`data/`), `config.lua`, and `schema.sql` (installed by the egg's installation script).
+
+See **[TWO-SERVER-SETUP.md](TWO-SERVER-SETUP.md)** for the full workflow (create TFS server → create database → paste credentials → create MyAAC server → paste same credentials).
