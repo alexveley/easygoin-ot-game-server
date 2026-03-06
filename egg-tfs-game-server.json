@@ -1,0 +1,110 @@
+{
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "name": "TFS Game Server",
+    "author": "alexveley",
+    "description": "The Forgotten Server (TFS) game server only. Create a database for this server in the Databases tab, then paste the connection details into Startup Variables. Use with MyAAC web server egg for the account/game panel (same database).",
+    "features": null,
+    "docker_images": {
+        "ghcr.io/alexveley/easygoin-ot-game-server:v1.6": "ghcr.io/alexveley/easygoin-ot-game-server:v1.6"
+    },
+    "file_denylist": [],
+    "startup": "tfs",
+    "config": {
+        "files": "{\r\n  \"config.lua\": {\r\n    \"parser\": \"file\",\r\n    \"find\": {\r\n      \"loginProtocolPort = .*\": \"loginProtocolPort = {{env.LOGIN_PORT}}\",\r\n      \"gameProtocolPort = .*\": \"gameProtocolPort = {{env.GAME_PORT}}\",\r\n      \"httpPort = .*\": \"httpPort = {{env.WEB_PORT}}\"\r\n    }\r\n  }\r\n}",
+        "startup": "{ \"done\": \"Forgotten Server Online\" }",
+        "logs": "{}",
+        "stop": "SIGTERM"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\r\nset -euo pipefail\r\n\r\necho \"=== TFS GAME SERVER INSTALLER ===\"\r\n\r\nSERVER_DIR=\"/mnt/server\"\r\ncd \"$SERVER_DIR\"\r\n\r\nif ! command -v git >/dev/null 2>&1; then\r\n  apt-get update\r\n  apt-get install -y git curl unzip openssl ca-certificates\r\nfi\r\n\r\nif [ ! -d data ]; then\r\n  echo \"Installing TFS datapack...\"\r\n  git clone --depth=1 --branch v1.6 https://github.com/otland/forgottenserver.git tfs-src\r\n  cp -r tfs-src/data .\r\n  cp tfs-src/config.lua.dist ./config.lua\r\n  cp tfs-src/schema.sql .\r\n  rm -rf tfs-src\r\nelse\r\n  echo \"Datapack already present.\"\r\nfi\r\n\r\nif [ ! -f key.pem ]; then\r\n  echo \"Generating RSA key...\"\r\n  openssl genpkey -algorithm RSA -out key.pem -pkeyopt rsa_keygen_bits:2048\r\n  chmod 600 key.pem\r\nfi\r\n\r\necho \"=== TFS INSTALLER END ===\"",
+            "container": "ghcr.io/ptero-eggs/installers:debian",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Login Port",
+            "description": "Login protocol port (e.g. 7171). Assign this allocation to the server.",
+            "env_variable": "LOGIN_PORT",
+            "default_value": "7171",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:1024,65535",
+            "field_type": "text"
+        },
+        {
+            "name": "Game Port",
+            "description": "Game protocol port (e.g. 7172). Assign this allocation to the server.",
+            "env_variable": "GAME_PORT",
+            "default_value": "7172",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:1024,65535",
+            "field_type": "text"
+        },
+        {
+            "name": "Web Port",
+            "description": "TFS HTTP port (optional). Leave default if not used.",
+            "env_variable": "WEB_PORT",
+            "default_value": "8080",
+            "user_viewable": false,
+            "user_editable": false,
+            "rules": "required|integer|between:1024,65535",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL Host",
+            "description": "Create a database for this server in the Databases tab, then paste the host here.",
+            "env_variable": "MYSQL_HOST",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:191",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL User",
+            "description": "Database username from the Databases tab.",
+            "env_variable": "MYSQL_USER",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:191",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL Password",
+            "description": "Database password from the Databases tab.",
+            "env_variable": "MYSQL_PASSWORD",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "present|string|max:191",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL Database",
+            "description": "Database name from the Databases tab.",
+            "env_variable": "MYSQL_DATABASE",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:191",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL Port",
+            "description": "Database port (usually 3306).",
+            "env_variable": "MYSQL_PORT",
+            "default_value": "3306",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:1,65535",
+            "field_type": "text"
+        }
+    ]
+}
