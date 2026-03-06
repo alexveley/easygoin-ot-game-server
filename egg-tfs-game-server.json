@@ -1,14 +1,16 @@
 {
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
     "meta": {
         "version": "PTDL_v2",
         "update_url": null
     },
+    "exported_at": "2026-03-06T12:00:00+00:00",
     "name": "TFS Game Server",
     "author": "alexveley",
     "description": "The Forgotten Server (TFS) game server only. Create a database for this server in the Databases tab, then paste the connection details into Startup Variables. Use with MyAAC web server egg for the account/game panel (same database).",
     "features": null,
     "docker_images": {
-        "ghcr.io/alexveley/easygoin-ot-game-server:v1.6": "ghcr.io/alexveley/easygoin-ot-game-server:v1.6"
+        "ghcr.io\/alexveley\/easygoin-ot-game-server:v1.6": "ghcr.io\/alexveley\/easygoin-ot-game-server:v1.6"
     },
     "file_denylist": [],
     "startup": "tfs",
@@ -20,8 +22,8 @@
     },
     "scripts": {
         "installation": {
-            "script": "#!/bin/bash\r\nset -euo pipefail\r\n\r\necho \"=== TFS GAME SERVER INSTALLER ===\"\r\n\r\nSERVER_DIR=\"/mnt/server\"\r\ncd \"$SERVER_DIR\"\r\n\r\nif ! command -v git >/dev/null 2>&1; then\r\n  apt-get update\r\n  apt-get install -y git curl unzip openssl ca-certificates\r\nfi\r\n\r\nif [ ! -d data ]; then\r\n  echo \"Installing TFS datapack...\"\r\n  git clone --depth=1 --branch v1.6 https://github.com/otland/forgottenserver.git tfs-src\r\n  cp -r tfs-src/data .\r\n  cp tfs-src/config.lua.dist ./config.lua\r\n  cp tfs-src/schema.sql .\r\n  rm -rf tfs-src\r\nelse\r\n  echo \"Datapack already present.\"\r\nfi\r\n\r\nif [ ! -f key.pem ]; then\r\n  echo \"Generating RSA key...\"\r\n  openssl genpkey -algorithm RSA -out key.pem -pkeyopt rsa_keygen_bits:2048\r\n  chmod 600 key.pem\r\nfi\r\n\r\necho \"=== TFS INSTALLER END ===\"",
-            "container": "ghcr.io/ptero-eggs/installers:debian",
+            "script": "#!\/bin\/bash\r\nset -euo pipefail\r\n\r\necho \"=== TFS GAME SERVER INSTALLER ===\"\r\n\r\nSERVER_DIR=\"\/mnt\/server\"\r\ncd \"$SERVER_DIR\"\r\n\r\n# ------------------------\r\n# Ensure tools\r\n# ------------------------\r\nif ! command -v git >\/dev\/null 2>&1; then\r\n  apt-get update\r\n  apt-get install -y \\\r\n    git \\\r\n    curl \\\r\n    unzip \\\r\n    openssl \\\r\n    ca-certificates\r\nfi\r\n\r\n# ------------------------\r\n# TFS datapack\r\n# ------------------------\r\nif [ ! -d data ]; then\r\n  echo \"Installing TFS datapack...\"\r\n  git clone --depth=1 --branch v1.6 https:\/\/github.com\/otland\/forgottenserver.git tfs-src\r\n  cp -r tfs-src\/data .\r\n  cp tfs-src\/config.lua.dist .\/config.lua\r\n  cp tfs-src\/schema.sql .\r\n  rm -rf tfs-src\r\nelse\r\n  echo \"Datapack already present.\"\r\nfi\r\n\r\n# ------------------------\r\n# RSA key\r\n# ------------------------\r\nif [ ! -f key.pem ]; then\r\n  echo \"Generating RSA key...\"\r\n  openssl genpkey -algorithm RSA -out key.pem -pkeyopt rsa_keygen_bits:2048\r\n  chmod 600 key.pem\r\nfi\r\n\r\necho \"=== TFS INSTALLER END ===\"",
+            "container": "ghcr.io\/ptero-eggs\/installers:debian",
             "entrypoint": "bash"
         }
     },
